@@ -1,0 +1,37 @@
+
+name: Build Minecraft Mod
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6'
+
+      - name: Extract project
+        run: |
+          mkdir project
+          unzip -q ScrollRightClick-Fabric-26.3.zip -d project
+
+      - name: Build mod
+        run: |
+          cd project/ScrollRightClick
+          gradle build
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScrollRightClick-JAR
+          path: project/ScrollRightClick/build/libs/*.jar
